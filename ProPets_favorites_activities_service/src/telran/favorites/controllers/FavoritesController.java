@@ -23,14 +23,16 @@ public class FavoritesController {
 	@Autowired
 	FavoritesManagement favoritesService;
 	
-	@GetMapping(value = FavoritesApiConstants.GET_FAVORITE_MESSAGES_POST)
-	ResponceMessagingDto[] getFavoriteMessagesPosts(@PathVariable("login") String login) {
-		return favoritesService.getFavoriteMessagesPosts(login);
+	@GetMapping(value = FavoritesApiConstants.GET_FA_MESSAGES_POSTS)
+	ResponceMessagingDto[] getFavoriteMessagesPosts(@PathVariable("login") String login, @PathVariable("service") String service) {
+		return favoritesService.getFavoriteMessagesPosts(login, service);
 	}
 	
-	@GetMapping(value = FavoritesApiConstants.GET_ACTIVITY_LOSTFOUND_POSTS)
-	ResponseLostFoundDto[] getActivityLostFoundPosts(@PathVariable("login") String login) {
-		return favoritesService.getActivityLostFoundPosts(login);
+	@GetMapping(value = FavoritesApiConstants.GET_FA_LOSTFOUND_POSTS)
+	ResponseLostFoundDto[] getActivityLostFoundPosts(@PathVariable("login") String login, @PathVariable("service") String service) {
+		return favoritesService.getActivityLostFoundPosts(login, service);
 	}
+	
+	//HERE WILL BE HOTELS GETTER
 	
 }
