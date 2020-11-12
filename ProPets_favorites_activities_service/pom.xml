@@ -4,13 +4,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>telran.message</groupId>
-	<artifactId>messageApi</artifactId>
+	<groupId>telran.favorites</groupId>
+	<artifactId>favoritesActivitiesApi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Message_Mongo</name>
-	<description>Propets Message</description>
+	<name>Favorites_Activities_Mongo</name>
+	<description>Propets Favorites Activities</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
