@@ -7,5 +7,6 @@ public interface FavoritesApiConstants {
 	String GET_FA_HOTELS_POSTS = 		"/fav/en/v1/hotels/{service}/{login}";
 	// Attention! favouritesactivities => fav
 	// Attention! Added path var "service"
+	//activities or favorites
 
 }
