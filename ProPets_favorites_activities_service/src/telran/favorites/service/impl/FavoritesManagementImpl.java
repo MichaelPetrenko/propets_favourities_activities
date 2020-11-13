@@ -1,23 +1,20 @@
 package telran.favorites.service.impl;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.function.ServerRequest.Headers;
-
 import telran.favorites.api.Activ;
 import telran.favorites.api.ResponceMessagingDto;
-import telran.favorites.api.ResponseLostFoundDto;
-import telran.favorites.api.codes.BadTokenException;
+import telran.favorites.api.ResponsePostDto;
 import telran.favorites.api.codes.NoContentException;
 import telran.favorites.service.interfaces.FavoritesManagement;
 
@@ -29,8 +26,43 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 
 	@Override
 	public ResponceMessagingDto[] getFavoriteMessagesPosts(String email, String service) {
-		System.out.println("============== email "+email);
-		System.out.println("============== service "+service);
+
+		String xToken = "eyJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImZvcmxpZHplbkBnbWFpbC5jb20iLCJwYXNzd29y"
+				+ "ZCI6IiQyYSQxMCRid29IRWxrL2lieEJKb3hwRGt5UmMuYXJVQ2xjeGw1VnRYdkZiSzJ1UTdSUWt6Skt"
+				+ "SQzdYMiIsInRpbWVzdGFtcCI6MTYwNzg3MjY4MzE0Miwicm9sZSI6WyJVU0VSIl19.XGkg_1-13Cfb7"
+				+ "rHwSSQuH80u5qdGM3pu_yD5eS8D41I";
+
+		String type = "message";
+
+		HashSet<String> hashID = requestIDfromAccounting(email, xToken, service, type);
+		
+		ResponceMessagingDto[] result = requestPostsByIDFromMessaging(hashID);
+		
+		return result;
+	}
+	
+	@Override
+	public ResponsePostDto[] getActivityLostFoundPosts(String email, String service) {
+		
+		String xToken = "eyJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImZvcmxpZHplbkBnbWFpbC5jb20iLCJwYXNzd29y"
+				+ "ZCI6IiQyYSQxMCRid29IRWxrL2lieEJKb3hwRGt5UmMuYXJVQ2xjeGw1VnRYdkZiSzJ1UTdSUWt6Skt"
+				+ "SQzdYMiIsInRpbWVzdGFtcCI6MTYwNzg3MjY4MzE0Miwicm9sZSI6WyJVU0VSIl19.XGkg_1-13Cfb7"
+				+ "rHwSSQuH80u5qdGM3pu_yD5eS8D41I";
+
+		String type = "lostfound";
+		
+		HashSet<String> hashID = requestIDfromAccounting(email, xToken, service, type);
+		for (String string : hashID) {
+			System.out.println(string);
+		}
+		
+		ResponsePostDto[] result = requestPostsByIDfromLostfound(hashID);
+		
+		return result;
+	}
+
+	//	TYPE may be message or lostfound or hotels
+	private HashSet<String> requestIDfromAccounting(String email, String xToken, String service, String type) {
 		
 		boolean serviceType = false;
 		if(service.equalsIgnoreCase("activities")) {
@@ -39,54 +71,73 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 		if(service.equalsIgnoreCase("favorites")) {
 			serviceType=false;
 		}
-		String servicePath = Boolean.toString(serviceType);
 		
-		String endPoint = "https://propets-me.herokuapp.com//account/en/v1/"+email+"?dataType="+servicePath;
-		System.out.println("============= endpoint "+endPoint);
-		RestTemplate restTemplate = new RestTemplate();
-
+		String servicePath = Boolean.toString(serviceType);
+		String endPoint = "https://propets-me.herokuapp.com/account/en/v1/"+email+"?dataType="+servicePath;
 		URI uri;
 		try {
 			uri = new URI(endPoint);
 		} catch (Exception e) {
 			throw new NoContentException();
 		}
-		//headers
+		
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-Token", "eyJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6InJlaXptcDRAZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkejFvMXdBVnpzdXlvWlpPM0VXU1BrZVkxaEpEVk91N2VHT21FRHV1T1RNelhCNU9hZUpvYU8iLCJ0aW1lc3RhbXAiOjE2MDc4MTEzMzIwMTQsInJvbGUiOlsiVVNFUiIsIkFETUlOIl19.MGe2nuxhYV7NR7LRUdtMervVYFkYgWtx2n55xCcNocE");
 		
-		ResponseEntity<Activ> responceFromAccounting;
-		System.out.println("========= i am try");
-		try {
-			RequestEntity<Void> requestToAccounting = RequestEntity.post(uri).build();
-			//=================
-			//new HttpEntity<>(headers);
-			HttpEntity<String> entity = new HttpEntity<>(headers);
-			Activ act = restTemplate.getForObject(uri, Activ.class);
-			System.out.println(Arrays.toString(act.message.toArray()));
-			
-			
-//			responceFromAccounting = restTemplate.exchange
-//					(uri, HttpMethod.GET, requestToAccounting, Activ.class);
-			System.out.println("======== after try");
-		} catch (Exception e) {
-			System.out.println("============== Benedict KimberCATCH");
-			throw new BadTokenException();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		headers.set("X-Token", xToken);
+		HttpEntity<String> request = new HttpEntity<>(headers);
+		ResponseEntity<Activ> responceFromAccounting = restTemplate.exchange(uri, HttpMethod.GET, request, Activ.class);
+		
+		HashSet<String> resp = null;
+		if(type.equalsIgnoreCase("message")) {
+			resp = responceFromAccounting.getBody().message;
 		}
-//
-//		Object[] resFromAcc = responceFromAccounting.getBody().message.toArray();
-//		System.out.println(Arrays.toString(resFromAcc));
+		if(type.equalsIgnoreCase("lostfound")) {
+			resp = responceFromAccounting.getBody().lostFound;
+		}
+		if(type.equalsIgnoreCase("hotels")) {
+			resp = responceFromAccounting.getBody().hotels;
+		}
 		
+		return resp;
 		
-		
-		
-		return null;
 	}
+	
+	private ResponceMessagingDto[] requestPostsByIDFromMessaging(HashSet<String> hashID) {
+		String endPointGetUserData = "https://propets-mes.herokuapp.com/message/en/v1/userdata";
+		URI uri;
+		try {
+			uri = new URI(endPointGetUserData);
+		} catch (Exception e) {
+			throw new NoContentException();
+		}
 
-	@Override
-	public ResponseLostFoundDto[] getActivityLostFoundPosts(String email, String service) {
-		// TODO Auto-generated method stub
-		return null;
+		HttpEntity<HashSet<String>> requestToData = new HttpEntity<HashSet<String>>(hashID);
+		ResponseEntity<ResponceMessagingDto[]> responceFromGetUserData = restTemplate.exchange(uri, 
+				HttpMethod.POST, requestToData, ResponceMessagingDto[].class);
+
+		ResponceMessagingDto[] result = responceFromGetUserData.getBody();
+
+		return result;
+	}
+	
+	private ResponsePostDto[] requestPostsByIDfromLostfound(HashSet<String> hashID) {
+		String endPointGetUserData = "https://propets-lfs.herokuapp.com/lostfound/en/v1/userdata";
+		URI uri;
+		try {
+			uri = new URI(endPointGetUserData);
+		} catch (Exception e) {
+			throw new NoContentException();
+		}
+
+		HttpEntity<HashSet<String>> requestToData = new HttpEntity<HashSet<String>>(hashID);
+		ResponseEntity<ResponsePostDto[]> responceFromGetUserData = restTemplate.exchange(uri, 
+				HttpMethod.POST, requestToData, ResponsePostDto[].class);
+
+		ResponsePostDto[] result = responceFromGetUserData.getBody();
+		
+		return result;
 	}
 	
 }
