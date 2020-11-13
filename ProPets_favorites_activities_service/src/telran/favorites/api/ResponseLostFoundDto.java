@@ -16,12 +16,13 @@ public class ResponseLostFoundDto {
 	public String[] photos;
 	public Address address;
 	public LocationDto location;
-	
-	public ResponseLostFoundDto() {}
+
+	public ResponseLostFoundDto() {
+	}
 
 	public ResponseLostFoundDto(String id, boolean typePost, String userLogin, String userName, String avatar,
-			String datePost, String type, String sex, String breed, String[] tags, String[] photos,
-			Address address, LocationDto location) {
+			String datePost, String type, String sex, String breed, String[] tags, String[] photos, Address address,
+			LocationDto location) {
 		super();
 		this.id = id;
 		this.typePost = typePost;
@@ -37,6 +38,21 @@ public class ResponseLostFoundDto {
 		this.address = address;
 		this.location = location;
 	}
-	
-	
+
+	public ResponseLostFoundDto(ResponsePostDto dto) {
+		this.id = dto.id;
+		this.typePost = dto.typePost;
+		this.userLogin = dto.userLogin;
+		this.userName = dto.userName;
+		this.avatar = dto.avatar;
+		this.datePost = dto.datePost;
+		this.type = dto.type;
+		this.sex = dto.sex;
+		this.breed = dto.breed;
+		this.tags = dto.tags;
+		this.photos = dto.photos;
+		this.address = dto.address;
+		this.location = new LocationDto(dto.location[0], dto.location[1]);
+	}
+
 }

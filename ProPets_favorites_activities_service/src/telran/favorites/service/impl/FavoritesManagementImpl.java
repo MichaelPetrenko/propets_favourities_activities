@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import telran.favorites.api.Activ;
 import telran.favorites.api.ResponceMessagingDto;
+import telran.favorites.api.ResponseLostFoundDto;
 import telran.favorites.api.ResponsePostDto;
 import telran.favorites.api.codes.NoContentException;
 import telran.favorites.service.interfaces.FavoritesManagement;
@@ -42,7 +43,7 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 	}
 	
 	@Override
-	public ResponsePostDto[] getActivityLostFoundPosts(String email, String service) {
+	public ResponseLostFoundDto[] getActivityLostFoundPosts(String email, String service) {
 		
 		String xToken = "eyJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImZvcmxpZHplbkBnbWFpbC5jb20iLCJwYXNzd29y"
 				+ "ZCI6IiQyYSQxMCRid29IRWxrL2lieEJKb3hwRGt5UmMuYXJVQ2xjeGw1VnRYdkZiSzJ1UTdSUWt6Skt"
@@ -52,11 +53,8 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 		String type = "lostfound";
 		
 		HashSet<String> hashID = requestIDfromAccounting(email, xToken, service, type);
-		for (String string : hashID) {
-			System.out.println(string);
-		}
 		
-		ResponsePostDto[] result = requestPostsByIDfromLostfound(hashID);
+		ResponseLostFoundDto[] result = requestPostsByIDfromLostfound(hashID);
 		
 		return result;
 	}
@@ -122,7 +120,7 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 		return result;
 	}
 	
-	private ResponsePostDto[] requestPostsByIDfromLostfound(HashSet<String> hashID) {
+	private ResponseLostFoundDto[] requestPostsByIDfromLostfound(HashSet<String> hashID) {
 		String endPointGetUserData = "https://propets-lfs.herokuapp.com/lostfound/en/v1/userdata";
 		URI uri;
 		try {
@@ -134,10 +132,14 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 		HttpEntity<HashSet<String>> requestToData = new HttpEntity<HashSet<String>>(hashID);
 		ResponseEntity<ResponsePostDto[]> responceFromGetUserData = restTemplate.exchange(uri, 
 				HttpMethod.POST, requestToData, ResponsePostDto[].class);
-
-		ResponsePostDto[] result = responceFromGetUserData.getBody();
 		
-		return result;
+		ResponsePostDto[] result = responceFromGetUserData.getBody();
+		ResponseLostFoundDto[] res = new ResponseLostFoundDto[result.length];
+		for (int i = 0; i < result.length; i++) {
+			res[i] = new ResponseLostFoundDto(result[i]);
+		}
+		
+		return res;
 	}
 	
 }

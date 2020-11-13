@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import telran.favorites.api.FavoritesApiConstants;
 import telran.favorites.api.ResponceMessagingDto;
+import telran.favorites.api.ResponseLostFoundDto;
 import telran.favorites.api.ResponsePostDto;
 import telran.favorites.service.interfaces.FavoritesManagement;
 
@@ -22,7 +23,7 @@ public class FavoritesController {
 	}
 	
 	@GetMapping(value = FavoritesApiConstants.GET_FA_LOSTFOUND_POSTS)
-	ResponsePostDto[] getActivityLostFoundPosts(@PathVariable("login") String login, @PathVariable("service") String service) {
+	ResponseLostFoundDto[] getActivityLostFoundPosts(@PathVariable("login") String login, @PathVariable("service") String service) {
 		return favoritesService.getActivityLostFoundPosts(login, service);
 	}
 	
