@@ -110,6 +110,8 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 		HttpEntity<String> request = new HttpEntity<>(headers);
 		ResponseEntity<Activ> responceFromAccounting = restTemplate.exchange(uri, HttpMethod.GET, request, Activ.class);
 		
+//		String newToken = responceFromAccounting.getHeaders().get("X-Token").get(0);
+		
 		HashSet<String> resp = null;
 		if(type.equalsIgnoreCase("message")) {
 			resp = responceFromAccounting.getBody().message;
