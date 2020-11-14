@@ -11,12 +11,19 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
+import org.springframework.web.client.HttpClientErrorException.Forbidden;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 import org.springframework.web.client.RestTemplate;
 import telran.favorites.api.Activ;
 import telran.favorites.api.ResponceMessagingDto;
 import telran.favorites.api.ResponseLostFoundDto;
 import telran.favorites.api.ResponsePostDto;
+import telran.favorites.api.codes.BadRequestException;
+import telran.favorites.api.codes.BadTokenException;
+import telran.favorites.api.codes.ForbiddenException;
 import telran.favorites.api.codes.NoContentException;
+import telran.favorites.api.codes.NotExistsException;
 import telran.favorites.service.interfaces.FavoritesManagement;
 
 @Service
@@ -26,35 +33,51 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 	RestTemplate restTemplate;
 
 	@Override
-	public ResponceMessagingDto[] getFavoriteMessagesPosts(String email, String service) {
-
-		String xToken = "eyJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImZvcmxpZHplbkBnbWFpbC5jb20iLCJwYXNzd29y"
-				+ "ZCI6IiQyYSQxMCRid29IRWxrL2lieEJKb3hwRGt5UmMuYXJVQ2xjeGw1VnRYdkZiSzJ1UTdSUWt6Skt"
-				+ "SQzdYMiIsInRpbWVzdGFtcCI6MTYwNzg3MjY4MzE0Miwicm9sZSI6WyJVU0VSIl19.XGkg_1-13Cfb7"
-				+ "rHwSSQuH80u5qdGM3pu_yD5eS8D41I";
+	public ResponceMessagingDto[] getFavoriteMessagesPosts(String email, String service, String xToken) {
 
 		String type = "message";
 
-		HashSet<String> hashID = requestIDfromAccounting(email, xToken, service, type);
-		
-		ResponceMessagingDto[] result = requestPostsByIDFromMessaging(hashID);
+		ResponceMessagingDto[] result = null;
+		try {
+			HashSet<String> hashID = requestIDfromAccounting(email, xToken, service, type);
+			result = requestPostsByIDFromMessaging(hashID);
+		} catch (Exception e) {
+			if (e instanceof Forbidden) {
+				throw new ForbiddenException();
+			}
+			else if (e instanceof Unauthorized) {
+				throw new BadTokenException();
+			}
+			else if (e instanceof BadRequest) {	
+				throw new BadRequestException();
+			}
+			else throw new NotExistsException();
+		}
 		
 		return result;
 	}
 	
 	@Override
-	public ResponseLostFoundDto[] getActivityLostFoundPosts(String email, String service) {
-		
-		String xToken = "eyJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImZvcmxpZHplbkBnbWFpbC5jb20iLCJwYXNzd29y"
-				+ "ZCI6IiQyYSQxMCRid29IRWxrL2lieEJKb3hwRGt5UmMuYXJVQ2xjeGw1VnRYdkZiSzJ1UTdSUWt6Skt"
-				+ "SQzdYMiIsInRpbWVzdGFtcCI6MTYwNzg3MjY4MzE0Miwicm9sZSI6WyJVU0VSIl19.XGkg_1-13Cfb7"
-				+ "rHwSSQuH80u5qdGM3pu_yD5eS8D41I";
+	public ResponseLostFoundDto[] getActivityLostFoundPosts(String email, String service, String xToken) {
 
 		String type = "lostfound";
 		
-		HashSet<String> hashID = requestIDfromAccounting(email, xToken, service, type);
-		
-		ResponseLostFoundDto[] result = requestPostsByIDfromLostfound(hashID);
+		ResponseLostFoundDto[] result;
+		try {
+			HashSet<String> hashID = requestIDfromAccounting(email, xToken, service, type);
+			result = requestPostsByIDfromLostfound(hashID);
+		} catch (Exception e) {
+			if (e instanceof Forbidden) {
+				throw new ForbiddenException();
+			}
+			else if (e instanceof Unauthorized) {
+				throw new BadTokenException();
+			}
+			else if (e instanceof BadRequest) {	
+				throw new BadRequestException();
+			}
+			else throw new NotExistsException();
+		}
 		
 		return result;
 	}

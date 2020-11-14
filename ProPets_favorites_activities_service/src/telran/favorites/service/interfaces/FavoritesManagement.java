@@ -5,7 +5,7 @@ import telran.favorites.api.ResponseLostFoundDto;
 
 public interface FavoritesManagement {
 	
-	ResponceMessagingDto[] getFavoriteMessagesPosts(String email, String service);	//get ret x-token
-	ResponseLostFoundDto[] getActivityLostFoundPosts(String email, String service);	//get ret x-token
+	ResponceMessagingDto[] getFavoriteMessagesPosts(String email, String service, String xToken);	//get ret x-token
+	ResponseLostFoundDto[] getActivityLostFoundPosts(String email, String service, String xToken);	//get ret x-token
 	//HERE WILL BE HOTELS GETTER
 }
