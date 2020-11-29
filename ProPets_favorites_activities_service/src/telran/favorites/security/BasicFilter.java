@@ -24,7 +24,7 @@ public class BasicFilter implements Filter {
 		String path = request.getServletPath();
 
 		if (
-			(path.matches("/fav/en/v1/[//S]+"))
+			(path.matches("/en/v1/[//S]+"))
 		 ) {
 				String xToken = request.getHeader("X-Token");
 				if(xToken==null || xToken=="") {

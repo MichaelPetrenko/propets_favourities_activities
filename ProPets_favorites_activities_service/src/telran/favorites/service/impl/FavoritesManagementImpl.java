@@ -94,7 +94,7 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 		}
 		
 		String servicePath = Boolean.toString(serviceType);
-		String endPoint = "https://propets-me.herokuapp.com/account/en/v1/"+email+"?dataType="+servicePath;
+		String endPoint = "https://propets-me.herokuapp.com/en/v1/"+email+"?dataType="+servicePath;
 		URI uri;
 		try {
 			uri = new URI(endPoint);
@@ -109,8 +109,6 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 		headers.set("X-Token", xToken);
 		HttpEntity<String> request = new HttpEntity<>(headers);
 		ResponseEntity<Activ> responceFromAccounting = restTemplate.exchange(uri, HttpMethod.GET, request, Activ.class);
-		
-//		String newToken = responceFromAccounting.getHeaders().get("X-Token").get(0);
 		
 		HashSet<String> resp = null;
 		if(type.equalsIgnoreCase("message")) {
@@ -128,7 +126,7 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 	}
 	
 	private ResponceMessagingDto[] requestPostsByIDFromMessaging(HashSet<String> hashID) {
-		String endPointGetUserData = "https://propets-mes.herokuapp.com/message/en/v1/userdata";
+		String endPointGetUserData = "https://propets-mes.herokuapp.com/en/v1/userdata";
 		URI uri;
 		try {
 			uri = new URI(endPointGetUserData);
@@ -146,7 +144,7 @@ public class FavoritesManagementImpl implements FavoritesManagement {
 	}
 	
 	private ResponseLostFoundDto[] requestPostsByIDfromLostfound(HashSet<String> hashID) {
-		String endPointGetUserData = "https://propets-lfs.herokuapp.com/lostfound/en/v1/userdata";
+		String endPointGetUserData = "https://propets-lfs.herokuapp.com/en/v1/userdata";
 		URI uri;
 		try {
 			uri = new URI(endPointGetUserData);
