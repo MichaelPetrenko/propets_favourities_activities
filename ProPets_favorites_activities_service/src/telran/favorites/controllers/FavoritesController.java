@@ -31,6 +31,5 @@ public class FavoritesController {
 		String xToken = request.getHeader("X-Token");
 		return favoritesService.getActivityLostFoundPosts(login, service, xToken);
 	}
-	// HERE WILL BE HOTELS GETTER
 
 }
