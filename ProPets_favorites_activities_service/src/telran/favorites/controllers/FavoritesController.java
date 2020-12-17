@@ -31,6 +31,12 @@ public class FavoritesController {
 		String xToken = request.getHeader("X-Token");
 		return favoritesService.getActivityLostFoundPosts(login, service, xToken);
 	}
+	
+	// "/wakeup"
+	@GetMapping(value = FavoritesApiConstants.WAKEUP)
+	void wakeUp() {
+		return;
+	}
 
 	// HERE WILL BE HOTELS GETTER
 
